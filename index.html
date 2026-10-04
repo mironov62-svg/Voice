@@ -24,90 +24,40 @@
       width: 100%;
       max-width: 480px;
     }
-    h1 {
-      font-size: 20px;
-      margin: 0 0 24px;
-      color: #1a1a1a;
-    }
-    label {
-      display: block;
-      font-size: 14px;
-      color: #555;
-      margin-bottom: 6px;
-    }
+    h1 { font-size: 20px; margin: 0 0 24px; color: #1a1a1a; }
+    label { display: block; font-size: 14px; color: #555; margin-bottom: 6px; }
     input[type="text"] {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid #d0d5dd;
-      border-radius: 8px;
-      font-size: 16px;
-      margin-bottom: 20px;
+      width: 100%; padding: 12px 14px; border: 1px solid #d0d5dd;
+      border-radius: 8px; font-size: 16px; margin-bottom: 20px;
       transition: border-color 0.2s;
     }
-    input[type="text"]:focus {
-      outline: none;
-      border-color: #2e7d32;
-    }
-    .buttons {
-      display: flex;
-      gap: 12px;
-    }
+    input[type="text"]:focus { outline: none; border-color: #2e7d32; }
+    .buttons { display: flex; gap: 12px; }
     button {
-      flex: 1;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
+      flex: 1; padding: 14px; border: none; border-radius: 8px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
       transition: all 0.2s;
     }
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    #recordBtn {
-      background: #e53935;
-      color: #fff;
-    }
-    #recordBtn.recording {
-      background: #b71c1c;
-      animation: pulse 1.2s infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.7; }
-    }
-    #sendBtn {
-      background: #2e7d32;
-      color: #fff;
-    }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    #recordBtn { background: #e53935; color: #fff; }
+    #recordBtn.recording { background: #b71c1c; animation: pulse 1.2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.7} }
+    #sendBtn { background: #2e7d32; color: #fff; }
     #sendBtn:hover:not(:disabled) { background: #1b5e20; }
     #recordBtn:hover:not(:disabled) { background: #c62828; }
     #recordBtn.recording:hover { background: #b71c1c; }
     .status {
-      margin-top: 20px;
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 14px;
-      display: none;
+      margin-top: 20px; padding: 12px 16px; border-radius: 8px;
+      font-size: 14px; display: none;
     }
-    .status.info { background: #e3f2fd; color: #0d47a1; display: block; }
+    .status.info    { background: #e3f2fd; color: #0d47a1; display: block; }
     .status.success { background: #e8f5e9; color: #1b5e20; display: block; }
-    .status.error { background: #ffebee; color: #b71c1c; display: block; }
-    audio {
-      width: 100%;
-      margin-top: 16px;
-      display: none;
-    }
+    .status.error   { background: #ffebee; color: #b71c1c; display: block; }
+    audio { width: 100%; margin-top: 16px; display: none; }
     audio.visible { display: block; }
     .timer {
-      font-family: monospace;
-      font-size: 18px;
-      color: #b71c1c;
-      text-align: center;
-      margin-top: 12px;
-      display: none;
+      font-family: monospace; font-size: 18px; color: #b71c1c;
+      text-align: center; margin-top: 12px; display: none;
     }
     .timer.visible { display: block; }
   </style>
@@ -132,22 +82,22 @@
 
   <script>
     // ============================================================
-    // ⚙️ НАСТРОЙКА — ВСТАВЬТЕ СЮДА URL НОВОГО ВЕБХУКА
+    // ⚠️ ВСТАВЬТЕ СЮДА URL ВАШЕГО НОВОГО ВЕБХУКА (только права CRM)
     // ============================================================
-    const WEBHOOK_URL = 'https://ВАШ_ПОРТАЛ.bitrix24.ru/rest/1/НОВЫЙ_КОД/';
+    const WEBHOOK_URL = 'https://b24-964ige.bitrix24.ru/rest/1/НОВЫЙ_КОД/';
     // ============================================================
 
     const dealIdInput = document.getElementById('dealId');
-    const recordBtn = document.getElementById('recordBtn');
-    const sendBtn = document.getElementById('sendBtn');
-    const statusEl = document.getElementById('status');
-    const previewEl = document.getElementById('preview');
-    const timerEl = document.getElementById('timer');
+    const recordBtn   = document.getElementById('recordBtn');
+    const sendBtn     = document.getElementById('sendBtn');
+    const statusEl    = document.getElementById('status');
+    const previewEl   = document.getElementById('preview');
+    const timerEl     = document.getElementById('timer');
 
     let mediaRecorder = null;
-    let audioChunks = [];
-    let recordedBlob = null;
-    let stream = null;
+    let audioChunks   = [];
+    let recordedBlob  = null;
+    let stream        = null;
     let timerInterval = null;
     let secondsElapsed = 0;
 
@@ -155,11 +105,7 @@
       statusEl.textContent = text;
       statusEl.className = 'status ' + type;
     }
-
-    function clearStatus() {
-      statusEl.className = 'status';
-      statusEl.textContent = '';
-    }
+    function clearStatus() { statusEl.className = 'status'; statusEl.textContent = ''; }
 
     function formatTime(s) {
       const m = String(Math.floor(s / 60)).padStart(2, '0');
@@ -174,17 +120,10 @@
       timerInterval = setInterval(() => {
         secondsElapsed++;
         timerEl.textContent = formatTime(secondsElapsed);
-        // Автостоп на 5 минутах
-        if (secondsElapsed >= 300) {
-          stopRecording();
-        }
+        if (secondsElapsed >= 300) stopRecording();
       }, 1000);
     }
-
-    function stopTimer() {
-      clearInterval(timerInterval);
-      timerInterval = null;
-    }
+    function stopTimer() { clearInterval(timerInterval); timerInterval = null; }
 
     async function startRecording() {
       clearStatus();
@@ -200,7 +139,6 @@
         return;
       }
 
-      // Выбираем поддерживаемый формат
       const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
         ? 'audio/webm;codecs=opus'
         : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : '');
@@ -249,9 +187,7 @@
     }
 
     function stopRecording() {
-      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-        mediaRecorder.stop();
-      }
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
     }
 
     recordBtn.addEventListener('click', () => {
@@ -271,10 +207,7 @@
     function blobToBase64(blob) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64 = reader.result.split(',')[1];
-          resolve(base64);
-        };
+        reader.onloadend = () => resolve(reader.result.split(',')[1]);
         reader.onerror = reject;
         reader.readAsDataURL(blob);
       });
@@ -285,39 +218,29 @@
       const fileName = `voice_${Date.now()}.webm`;
       const now = new Date().toLocaleString('ru-RU');
 
-      const payload = {
-        fields: {
-          ENTITY_TYPE: 'deal',
-          ENTITY_ID: parseInt(dealId, 10),
-          COMMENT: `🎤 Голосовое сообщение (${formatTime(secondsElapsed)}) — ${now}`,
-          FILES: [[fileName, base64]]
-        }
-      };
+      const params = new URLSearchParams();
+      params.append('fields[ENTITY_TYPE]', 'deal');
+      params.append('fields[ENTITY_ID]', dealId);
+      params.append('fields[COMMENT]', `🎤 Голосовое сообщение (${formatTime(secondsElapsed)}) — ${now}`);
+      params.append('fields[FILES][0][0]', fileName);
+      params.append('fields[FILES][0][1]', base64);
 
+      // Прямой запрос из браузера в Битрикс24 (никакого прокси)
       const res = await fetch(`${WEBHOOK_URL}crm.timeline.comment.add.json`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params
       });
 
       const data = await res.json();
-
-      if (data.error) {
-        throw new Error(`${data.error}: ${data.error_description || ''}`);
-      }
+      if (data.error) throw new Error(`${data.error}: ${data.error_description || ''}`);
       return data.result;
     }
 
     sendBtn.addEventListener('click', async () => {
       const dealId = dealIdInput.value.trim();
-      if (!dealId) {
-        setStatus('⚠️ Введите ID сделки', 'error');
-        return;
-      }
-      if (!recordedBlob) {
-        setStatus('⚠️ Сначала запишите сообщение', 'error');
-        return;
-      }
+      if (!dealId)         { setStatus('⚠️ Введите ID сделки', 'error'); return; }
+      if (!recordedBlob)   { setStatus('⚠️ Сначала запишите сообщение', 'error'); return; }
 
       sendBtn.disabled = true;
       recordBtn.disabled = true;
@@ -326,7 +249,6 @@
       try {
         const commentId = await sendToBitrix(dealId, recordedBlob);
         setStatus(`✅ Отправлено! ID комментария: ${commentId}`, 'success');
-        // Сброс
         recordedBlob = null;
         previewEl.classList.remove('visible');
         previewEl.src = '';
@@ -340,7 +262,6 @@
       }
     });
 
-    // Разрешаем только цифры в поле ID
     dealIdInput.addEventListener('input', (e) => {
       e.target.value = e.target.value.replace(/\D/g, '');
     });
